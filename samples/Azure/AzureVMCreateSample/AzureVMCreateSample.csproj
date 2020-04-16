@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Core" Version="1.2.0" />
+    <PackageReference Include="Azure.Identity" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Azure.Management.Compute" Version="35.1.0" />
+    <PackageReference Include="Microsoft.Azure.Management.Fluent" Version="1.33.0" />
+    <PackageReference Include="Microsoft.Azure.Management.Network" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Azure.Management.ResourceManager" Version="3.7.0-preview" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Azure.Management.Compute">
+      <HintPath>..\..\..\..\..\Github\SDK\azure-sdk-for-net\artifacts\bin\Azure.Management.Compute\Debug\netstandard2.0\Azure.Management.Compute.dll</HintPath>
+    </Reference>
+    <Reference Include="Azure.Management.Network">
+      <HintPath>..\..\..\..\..\Github\SDK\azure-sdk-for-net\artifacts\bin\Azure.Management.Network\Debug\netstandard2.0\Azure.Management.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="Azure.Management.Resource">
+      <HintPath>..\..\..\..\..\Github\SDK\azure-sdk-for-net\artifacts\bin\Azure.Management.Resource\Debug\netstandard2.0\Azure.Management.Resource.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="azureauth.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="CreateVMTemplate.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Parameters.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
