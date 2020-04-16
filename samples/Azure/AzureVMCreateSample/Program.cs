@@ -7,7 +7,7 @@ namespace AzureVMCreateSample
     {
         static async Task Main(string[] args)
         {
-            var subscriptionId = "***REMOVED***";
+            var subscriptionId = "db1ab6f0-4769-4b27-930e-01e2ef9c123c";
             var location = "westus2";
 
             //await Track1.CreateVmAsync(subscriptionId, "azhang-rg-track1", location, "testVM1");
