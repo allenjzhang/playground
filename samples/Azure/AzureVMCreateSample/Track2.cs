@@ -45,6 +45,7 @@ namespace AzureVMCreateSample
                 .CreateOrUpdateAsync(resourceGroup, vmName + "_aSet", availabilitySet);
 
             // Create IP Address
+            // TODO verify why lack of (location) ctor.
             var ipAddress = new PublicIPAddress()
             {
                 PublicIPAddressVersion = IPVersion.IPv4,
@@ -99,7 +100,6 @@ namespace AzureVMCreateSample
             var vm = new VirtualMachine(location)
             {
                 NetworkProfile = new NetworkProfile { NetworkInterfaces = new [] { new NetworkInterfaceReference() { Id = nic.Id } } },
-                AvailabilitySet = new SubResource { Id = availabilitySet.Id },
                 OsProfile = new OSProfile
                 {
                     ComputerName = "testVM",
@@ -120,6 +120,7 @@ namespace AzureVMCreateSample
                 },
                 HardwareProfile = new HardwareProfile() { VmSize = VirtualMachineSizeTypes.StandardB1Ms },
             };
+            vm.AvailabilitySet.Id = availabilitySet.Id;
 
             await computeClient.VirtualMachines
                 .StartCreateOrUpdate(resourceGroup, vmName, vm)

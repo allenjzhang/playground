@@ -12,7 +12,7 @@ namespace AzureVMCreateSample
 
             //await Track1.CreateVmAsync(subscriptionId, "azhang-rg-track1", location, "testVM1");
 
-            await Track2.CreateVmAsync(subscriptionId, "azhang-rg", location, "testVM2");
+            await Track2WithHelpers.CreateVmAsync(subscriptionId, "azhang-rg", location, "testVM2");
 
             //await Fluent.CreateVmAsync(subscriptionId, "azhang-rg-fluent", location, "testVMfluent");
 
