@@ -86,7 +86,8 @@ SdkCodeGen
 *.njsperf
 *.sdf
 *.opensdf
-bin/*.dll
+[Bb]in
+[Oo]bj
 
 # Visual Studio Code
 .settings/
