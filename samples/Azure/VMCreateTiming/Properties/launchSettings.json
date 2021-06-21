@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "VMCreateTiming": {
+      "commandName": "Project",
+      "commandLineArgs": "test6 -c 1",
+      "environmentVariables": {
+        "Subscription_ID": "db1ab6f0-4769-4b27-930e-01e2ef9c123c",
+        "Azure_ClientSecret": "K-1VX42Men.3TJ0B4yfW16-jYBP_mt_1o3",
+        "Azure_ClientId": "518a1118-468e-499c-a0bf-d601c8fc6adc"
+      }
+    }
+  }
+}
