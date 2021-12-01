@@ -6,13 +6,14 @@ body:
 - type: markdown
   attributes:
     value: >
-      Thanks for reporting. Please pick an area first from the list below
-
+      Thanks for reporting. Please pick an area first from the list below:
+- type: markdown
+  attributes:
+    value: >
       - [ ] Bugs
       - [ ] Feature Request / Suggestion
       - [ ] Questions
       - [ ] Other
-
 - type: textarea
   attributes:
     label: Issue details
