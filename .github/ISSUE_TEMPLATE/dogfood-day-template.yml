@@ -1,12 +1,12 @@
-name: Dogfood day issues 
+name: Dogfood day issues
 description: Report errors, suggestions, or unexpected behaviors.
-labels: [needs-triage, bug]
+labels: [DogfoodDays]
 
 body:
 - type: markdown
   attributes:
-  value: >
-  Thanks for reporting. Please pick an area first from the list below
+    value: >
+      Thanks for reporting. Please pick an area first from the list below
 
       - [ ] Bugs
       - [ ] Feature Request / Suggestion
@@ -15,16 +15,16 @@ body:
 
 - type: textarea
   attributes:
-  label: Issue details:
-  description: >
-  Please describe the issue and expected result.
+    label: Issue details
+    description: >
+      Please describe the issue and expected result.
 - type: textarea
   attributes:
-  label: CADL examples
-  description: >
-  Please share any relevant CADL code.
+    label: CADL examples
+    description: >
+      Please share any relevant CADL code.
 - type: textarea
   attributes:
-  label: Swagger examples
-  description: >
-  Please share any relevant swaggers.
+    label: Swagger examples
+    description: >
+      Please share any relevant swaggers.
