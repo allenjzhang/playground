@@ -1,7 +1,6 @@
-name: Dogfood day template
-about: Issues to be opened for internal Dogfood day
-title: Dogfood day
-labels: [DogfoodDays]
+name: Dogfood day issues 
+description: Report errors, suggestions, or unexpected behaviors.
+labels: [needs-triage, bug]
 
 body:
 - type: markdown
