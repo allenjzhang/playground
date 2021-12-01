@@ -11,8 +11,17 @@ body:
   attributes:
     value: >
       - [ ] Bugs
+- type: markdown
+  attributes:
+    value: >
       - [ ] Feature Request / Suggestion
+- type: markdown
+  attributes:
+    value: >
       - [ ] Questions
+- type: markdown
+  attributes:
+    value: >
       - [ ] Other
 - type: textarea
   attributes:
