@@ -1,11 +1,9 @@
 name: Dogfood day template
 about: Issues to be opened for internal Dogfood day
-title: "[Dogfood day]"
-labels: "DogfoodDays"
-assignees: ""
+title: Dogfood day
+labels: [DogfoodDays]
 
 body:
-
 - type: markdown
   attributes:
   value: >
