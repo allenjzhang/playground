@@ -1,4 +1,5 @@
 name: Dogfood day issues
+title: "[Dogfood]"
 description: Report errors, suggestions, or unexpected behaviors.
 labels: [DogfoodDays]
 
