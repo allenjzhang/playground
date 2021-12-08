@@ -1,0 +1,178 @@
+import "@cadl-lang/rest";
+import "@cadl-lang/openapi3";
+import "./common.cadl";
+
+@serviceTitle(
+  "Microsoft Cognitive Language Service - Question Answering - Authoring"
+)
+@serviceVersion("21-10-01")
+namespace QnAMaker;
+
+using Cadl.Http;
+
+model ApiKey {
+  @doc("Service connection key")
+  @header
+  "Ocp-Apim-Subscription-Key": string;
+}
+
+alias OkWithError<T> = OkResponse<T> | ErrorResponse;
+
+alias OkStatusCode<T, U> = {
+  @header statusCode: T;
+  @body body: U;
+};
+
+@route("/query-knowledgebases/projects")
+namespace QuestionAnsweringProjects {
+  @doc("Gets all projects for a user")
+  @get
+  @pageable
+  op ListProjects(
+    ... ApiVersionParameter,
+    ... ListParameters
+  ): OkWithError<ProjectsMetadata>;
+
+  @doc("Get the requested project metadata")
+  @get
+  op GetProjectDetails(
+    ... ApiVersionParameter,
+    ... ProjectNamePathParameter
+  ): OkWithError<ProjectMetadata>;
+
+  @doc("Create or update a project")
+  @patch
+  op CreateProject(
+    ... ApiVersionParameter,
+    ... ProjectNamePathParameter,
+    @body body: CreateProjectOptions
+  ): OkStatusCode<200 | 201, ProjectMetadata> | ErrorResponse;
+
+  @doc("Delete the project")
+  @extension("x-ms-long-running-operation", true)
+  @patch
+  op DeleteProject(... ApiVersionParameter, ... ProjectNamePathParameter): {
+    @header statusCode: 202;
+    @header "Operation-Location": string;
+  } | ErrorResponse;
+
+  @doc("Gets the status of a Project delete job")
+  @get("deletion-jobs")
+  op GetDeleteStatus(
+    ... ApiVersionParameter,
+    ... JobIdParameter
+  ): OkWithError<JobState>;
+
+  @doc("Export project metadata and assets")
+  @extension("x-ms-long-running-operation", true)
+  @post("{projectName}/:export")
+  op Export(
+    ... ApiVersionParameter,
+    ... ProjectNamePathParameter,
+    ... ImportExportFormatParameter,
+    ... AssetKindParameter
+  ): LROResponse;
+
+  @doc(
+    "Gets the status of an Export job, once job completes, returns the project metadata, and assets"
+  )
+  @get("{projectName}/export/jobs/{jobId}")
+  op GetExportStatus(
+    ... ApiVersionParameter,
+    ... ProjectNamePathParameter,
+    ... JobIdParameter
+  ): OkWithError<ExportJobState>;
+
+  @doc("Import project assets")
+  @extension("x-ms-long-running-operation", true)
+  @post("{projectName}/:import")
+  op Import(
+    ... ApiVersionParameter,
+    ... ProjectNamePathParameter,
+    ... ImportExportFormatParameter,
+    ... AssetKindParameter
+  ): LROResponse;
+
+  @doc("Gets the status of an Import job")
+  @get("{projectName}/import/jobs/{jobId}")
+  op GetImportStatus(
+    ... ApiVersionParameter,
+    ... ProjectNamePathParameter,
+    ... JobIdParameter
+  ): OkWithError<JobState>;
+}
+
+// Model definitions
+
+model Page<T> {
+  value: T[];
+  nextLink?: string;
+}
+
+model ProjectsMetadata {
+  ... Page<ProjectMetadata>;
+}
+
+@doc("Represents the project")
+model ProjectMetadata {
+  @doc("Name of the project")
+  projectName: string;
+}
+
+@doc("Parameters needed to create the project")
+model CreateProjectOptions {
+  @doc("Description of the project")
+  description?: string;
+  ... Language;
+
+  @doc("Resource enabled for multiple languages across projects or not")
+  multilingualResource?: boolean;
+
+  @doc("Configurable settings of the Project")
+  settings?: ProjectSettings;
+}
+
+@doc("Configurable settings of the Project")
+model ProjectSettings {
+  @doc(
+    "Default Answer response when no good match is found in the knowledge base"
+  )
+  defaultAnswer?: string;
+}
+
+@doc("Represents the job metadata")
+model JobMetadata {
+  createdDateTime: zonedDateTime;
+  expirationDateTime?: zonedDateTime;
+  jobId: string;
+  lastUpdatedDateTime: zonedDateTime;
+  status: JobStatus;
+}
+
+enum JobStatus {
+  "notStarted",
+  "running",
+  "succeeded",
+  "failed",
+  "cancelled",
+  "cancelling",
+  "partiallyCompleted",
+}
+
+@doc("Job state represents the job metadata and any errors")
+model JobState {
+  ... JobMetadata;
+  ... Errors;
+}
+
+@doc("URL to download the result of the Export Job")
+model ExportJobResultUrl {
+  @doc("URL to download the result of the Export Job")
+  resultUrl: string;
+}
+
+@doc("Export job status, project metadata, and assets.")
+model ExportJobState {
+  ... JobState;
+  ... ExportJobResultUrl;
+}

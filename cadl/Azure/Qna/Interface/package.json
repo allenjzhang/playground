@@ -1,0 +1,13 @@
+{
+  "name": "rest-dogfood",
+  "dependencies": {
+    "@cadl-lang/compiler": "^0.24.1",
+    "@cadl-lang/openapi3": "^0.4.2",
+    "@cadl-lang/rest": "^0.7.1"
+  },
+  "devDependencies": {
+    "@cadl-lang/prettier-plugin-cadl": "^0.5.4",
+    "prettier": "~2.4.1"
+  },
+  "private": true
+}

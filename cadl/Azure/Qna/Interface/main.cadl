@@ -1,0 +1,57 @@
+import "@cadl-lang/rest";
+import "@cadl-lang/openapi3";
+
+import "./questionanswering-authoring_models.cadl";
+
+@serviceTitle("Hello world")
+@serviceVersion("0.1.0")
+namespace Azure.Language.QnA; //@route("")  // TODO
+
+using Cadl.Rest;
+using Cadl.Rest.Resource;
+
+@doc("")
+@Cadl.Http.route("/projects/{projectName}")
+namespace Hello {
+  @Cadl.Http.post
+  op CreateExport(...ProjectNamePathParameter): Cadl.Http.OkResponse<JobState>;
+}
+
+interface Projects mixes ResourceList<ProjectMetadata, ODataError>, ResourceRead<ProjectMetadata, ODataError>, ResourceDelete<ProjectMetadata, ODataError>, ResourceUpdate<ProjectMetadata, ODataError> {
+  @extension("x-ms-long-running-operation", true)
+  @Cadl.Http.post
+  CreateExport(
+    ...ResourceParameters<ProjectMetadata>,
+    ...AssetKindParameter
+  ): Cadl.Http.OkResponse<""> | ODataError; // TODO: capture LRO status
+  @Cadl.Http.post feedback(
+    ...ResourceParameters<ProjectMetadata>,
+    @Cadl.Http.body feedback: ActiveLearningFeedback
+  ): Cadl.Http.OkResponse<ActiveLearningFeedback> | ODataError;
+}
+
+// TODO: Switch to CreateOrUpdate
+interface Deployments mixes ResourceCreate<ProjectDeployment, ODataError>, ResourceList<ProjectDeployment, ODataError> {
+  // TODO extension resource for multi-parents
+  @Cadl.Http.get("{projectName}/jobs/{jobId}") GetJob(
+    ...ResourceParameters<QnaSourceRecord>,
+    ...JobIdParameter
+  ): JobState | ODataError;
+}
+
+interface Synonyms mixes ResourceCreate<SynonymAsset, ODataError>, ResourceList<SynonymAsset, ODataError> {}
+
+interface Sources mixes ResourceUpdate<QnaSourceRecord, ODataError>, ResourceList<QnaSourceRecord, ODataError> {
+  // TODO: Singlton Resource not represented correctly
+  @Cadl.Http.get("{projectName}/jobs/{jobId}") GetJob(
+    ...ResourceParameters<QnaSourceRecord>,
+    ...JobIdParameter
+  ): JobState | ODataError;
+}
+
+interface Qnas mixes ResourceCreate<QnaRecord, ODataError>, ResourceList<QnaRecord, ODataError> {
+  @Cadl.Http.get("/jobs/{jobId}") GetJob(
+    ...ResourceParameters<QnaRecord>,
+    ...JobIdParameter
+  ): JobState | ODataError;
+}
