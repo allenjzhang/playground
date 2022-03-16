@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cadl.ProviderHubController.Common;
 using Newtonsoft.Json;
+using VersioningSample1.Additions;
 
 namespace Microsoft.PlayFab.Service.Models {
-    [Discriminator(Value = "Freshness")]
-    [JsonObject("Freshness")]
+    [Discriminator("type", "Freshness")]
+    //[JsonObject("Freshness")]
     public partial class FreshnessScoringFunction : ScoringFunction {
 
         private static readonly string DiscriminatorValue = "Freshness";

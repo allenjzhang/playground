@@ -5,12 +5,6 @@ using System.Threading.Tasks;
 
 namespace Cadl.ProviderHubController.Common
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class DiscriminatorAttribute : Attribute
-    {
-        public string Value { get; set; }
-    }
-
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Enum | AttributeTargets.Property)]
     public class AddedAttribute : Attribute
     {

@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using Cadl.ProviderHubController.Common.Additions;
 using Microsoft.PlayFab.Service.Models;
-using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
+using VersioningSample1.Additions;
 
 namespace VersioningSample1
 {
@@ -12,20 +12,76 @@ namespace VersioningSample1
     {
         static void Main(string[] args)
         {
-            VersioningSerialization();
+            DiscriminatorSerialization();
+
+            //VersioningSerializationWithResolver();
+            //var test = new DiscriminatorTests();
+            //test.SerializeSingle();
         }
 
         static void DiscriminatorSerialization()
         {
-            var polySetting1 = new JsonSerializerSettings();
-            polySetting1.Converters.Add(new PolymorphicDeserializeJsonConverter<ScoringFunction>("type"));
-            var polySetting2 = new JsonSerializerSettings();
-            polySetting1.Converters.Add(new PolymorphicSerializeJsonConverter<ScoringFunction>("type"));
+            var serializer = new VersionedSerializer();
+            var settings = serializer.GetJsonSerializerSettings("2022-01-01");
+            var distance = new DistanceScoringFunction() { Type = "distance", Boost = 100, Distance = 11 };
+            var v1Str = JsonConvert.SerializeObject(distance, Formatting.Indented, settings);
+            var backObj = JsonConvert.DeserializeObject<PlayerDatabase>(v1Str, settings);
+            Console.WriteLine(backObj.Properties.Function.GetType().Name);
+            Debug.Assert(backObj.GetType() == distance.GetType());
+        }
 
-            var x = new DistanceScoringFunction() { Type = "distance", Boost = 100, Distance = 11 };
-            var str = JsonConvert.SerializeObject(x, polySetting2);
-            var y = JsonConvert.DeserializeObject<ScoringFunction>(str, polySetting1);
-            Debug.Assert(y.GetType() == x.GetType());
+        static void VersioningSerializationWithResolver()
+        {
+            Console.WriteLine("Versioning Serialization with ContractResolver");
+
+            var pdp = new PlayerDatabaseProperties
+            {
+                Color = "blue",
+                UserId = "James",
+                Titles = new[] { "heavyweight", "middleweight" },
+                Weight = 10,
+                Function = new DistanceScoringFunction { Boost = 100, Distance = 7, AdvancedDistance = 77},
+            };
+
+            var serializer = new VersionedSerializer();
+            serializer.AddConverters(new DiscriminatorJsonConverter<ScoringFunction>("type"));
+            var settings1 = serializer.GetJsonSerializerSettings("2022-01-01");
+            Console.WriteLine("V1 Json (+ color, - weight)");
+            Console.WriteLine(JsonConvert.SerializeObject(pdp, settings1));
+
+            var settings2 = serializer.GetJsonSerializerSettings("2022-03-01");
+
+            Console.WriteLine("V2 Json (- color, + weight)");
+            Console.WriteLine(JsonConvert.SerializeObject(pdp, settings2));
+
+            var pd = new PlayerDatabase
+            {
+                Flavor = "StrawBerry",
+                Spin = "Up",
+                Id = "/subscriptions/foo/resourcegroups/foo2/Microsoft.PlayFab/playerDatabases/pd",
+                Location = "West Europe",
+                AddedV3 = "Hope this is v2",
+                RemovedV3 = "Hope this is v1",
+                Properties = pdp,
+            };
+
+            var v1Str = JsonConvert.SerializeObject(pd, Formatting.Indented, serializer.GetJsonSerializerSettings());
+
+            settings1.Converters.Add(new DiscriminatorJsonConverter<ScoringFunction>("type"));
+            settings1.Converters.Add(new DiscriminatorJsonConverter<ScoringFunction>("type"));
+
+
+            Console.WriteLine("V1 Json (+ removedV2, - addedV2, + spin, properties:(+ color, - weight)");
+            Console.WriteLine(v1Str);
+            //Console.WriteLine("V2 Json (- removedV2, + addedV2, - spin, properties:(- color, + weight)");
+            //Console.WriteLine(v2Str);
+            //Console.WriteLine("Canonical Version");
+            //Console.WriteLine(canonicalStr);
+
+            var roundtripObj = JsonConvert.DeserializeObject<PlayerDatabase>(v1Str, settings1);
+            Console.WriteLine(roundtripObj.Properties.Function.GetType().Name);
+            var roundtripObj2 = JsonConvert.DeserializeObject<PlayerDatabase>(v1Str, settings2);
+            Console.WriteLine(roundtripObj.Properties.Function.GetType().Name);
         }
 
         static void VersioningSerialization()
@@ -37,22 +93,17 @@ namespace VersioningSample1
             {
                 Color = "blue",
                 UserId = "James",
-                Titles = new[] { "heavyweight", "middleweight" },
+                Titles = new[] {"heavyweight", "middleweight"},
                 Weight = 10,
-                Function = new DistanceScoringFunction { Boost = 100, Distance = 7 }
+                Function = new DistanceScoringFunction { Boost = 100, Distance = 7 },
             };
+            
 
             var settings1 = new JsonSerializerSettings();
             var settings2 = new JsonSerializerSettings();
-            // Add PolymophicConverter
-            settings1.Converters.Add(new PolymorphicDeserializeJsonConverter<ScoringFunction>("type"));
-            settings2.Converters.Add(new PolymorphicDeserializeJsonConverter<ScoringFunction>("type"));
-            settings1.Converters.Add(new PolymorphicSerializeJsonConverter<ScoringFunction>("type"));
-            settings2.Converters.Add(new PolymorphicSerializeJsonConverter<ScoringFunction>("type"));
-
             var builder = VersioningConverterBuilder.GetBuilder(new[] { "2022-01-01", "2022-03-01" });
-            var converterV1 = new PlayerDatabasePropertiesConverter("2022-01-01"); //builder.GetConverter<PlayerDatabaseProperties>("2022-01-01");
-            var converterV2 = new PlayerDatabasePropertiesConverter("2022-03-01"); //builder.GetConverter<PlayerDatabaseProperties>("2022-03-01");
+            var converterV1 = new PlayerDatabasePropertiesConverter("2022-01-01");//builder.GetConverter<PlayerDatabaseProperties>("2022-01-01");
+            var converterV2 = new PlayerDatabasePropertiesConverter("2022-03-01");//builder.GetConverter<PlayerDatabaseProperties>("2022-03-01");
             settings1.Converters.Add(converterV1);
             settings2.Converters.Add(converterV2);
             var v1 = JsonConvert.SerializeObject(pdp, settings1);
@@ -74,10 +125,10 @@ namespace VersioningSample1
 
             Console.WriteLine("Versioning Deserialization");
 
-            var pdpv1 = JsonConvert.DeserializeObject<PlayerDatabaseProperties>(@"{""UserId"":""James"",""ProvisioningState"":null,""Color"":""blue"",""Titles"":[""heavyweight"",""middleweight""],""Function"":{""distance"":7,""type"":""Distance"",""boost"":100}}", settings1);
+            var pdpv1 = JsonConvert.DeserializeObject<PlayerDatabaseProperties>(@"{""UserId"":""James"",""ProvisioningState"":null,""Color"":""blue"",""Titles"":[""heavyweight"",""middleweight""]}", settings1);
             Console.WriteLine("V1 Json (+ color, - weight)");
             Console.WriteLine(JsonConvert.SerializeObject(pdpv1));
-            var pdpv2 = JsonConvert.DeserializeObject<PlayerDatabaseProperties>(@"{""UserId"":""James"",""ProvisioningState"":null,""Weight"":10,""Titles"":[""heavyweight"",""middleweight""],""Function"":{""freshness"":77,""type"":""Freshness"",""boost"":100}}", settings2);
+            var pdpv2 = JsonConvert.DeserializeObject<PlayerDatabaseProperties>(@"{""UserId"":""James"",""ProvisioningState"":null,""Weight"":10,""Titles"":[""heavyweight"",""middleweight""]}", settings2);
             Console.WriteLine("V2 Json (- color, + weight)");
             Console.WriteLine(JsonConvert.SerializeObject(pdpv2));
 
@@ -92,8 +143,6 @@ namespace VersioningSample1
 
             Console.WriteLine("Roundtrip v2 -> v1");
             Console.WriteLine(JsonConvert.SerializeObject(pdpv2, settings1));
-
-            Console.ReadLine();
         }
     }
 }

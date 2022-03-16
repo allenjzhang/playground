@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cadl.ProviderHubController.Common;
 using Newtonsoft.Json;
+using VersioningSample1.Additions;
 
 namespace Microsoft.PlayFab.Service.Models {
-    [Discriminator(Value = "Distance")]
-    [JsonObject("Distance")]
+    [Discriminator("type", "Distance")]
+    [JsonConverter(typeof(DiscriminatorJsonConverter<ScoringFunction>))]
     public partial class DistanceScoringFunction : ScoringFunction
     {
         private static readonly string DiscriminatorValue = "Distance";
@@ -18,5 +19,9 @@ namespace Microsoft.PlayFab.Service.Models {
 
         [JsonProperty(PropertyName = "distance")]
         public int Distance { get; set; }
+
+        [JsonProperty(PropertyName = "advancedDistance")]
+        [Added(OnVersion = "2022-03-01")]
+        public int AdvancedDistance { get; set; }
     }
 }

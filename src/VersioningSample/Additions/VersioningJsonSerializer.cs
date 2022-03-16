@@ -1,8 +1,11 @@
 ﻿using Cadl.ProviderHubController.Common;
 using Microsoft.PlayFab.Service.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
-using Microsoft.Rest.Serialization;
+using System.Collections.Generic;
+using System.Linq;
+using VersioningSample1.Additions;
 
 namespace Cadl.ProviderHubController.Common.Additions
 {
@@ -31,7 +34,7 @@ namespace Cadl.ProviderHubController.Common.Additions
             if (xIndex == -1)
                 throw new ArgumentException($"Invalid version {x}, valid api-versions include {string.Join(", ", _versions)}");
             if (yIndex == -1)
-                throw new ArgumentException($"Invalid version {y}");
+                throw new ArgumentException($"Invalid version {y}, valid api-versions include {string.Join(", ", _versions)}");
 
             return xIndex - yIndex;
         }
@@ -67,72 +70,11 @@ namespace Cadl.ProviderHubController.Common.Additions
         }
     }
 
-    public class VersioningJsonConverter<T> : JsonConverter<T>
+    public interface IVersionedProperties
     {
-
-        string _version { get;}
-        StringComparer _versionComparer { get; }
-
-        public VersioningJsonConverter(StringComparer comparer, string version)
-        {
-            _versionComparer = comparer;
-            _version = version;
-        }
-
-        public override T ReadJson(JsonReader reader, Type objectType, T existingValue, bool hasExistingValue, JsonSerializer serializer)
-        {
-            T result = serializer.Deserialize<T>(reader);
-            foreach (var prop in typeof(T).GetProperties())
-            {
-                if (AddedAttribute.IsDefined(prop, typeof(AddedAttribute))) {
-                    var added = AddedAttribute.GetCustomAttribute(prop, typeof(AddedAttribute)) as AddedAttribute;
-                    if (_versionComparer.Compare(_version, added.OnVersion) < 0)
-                    {
-                        prop.SetValue(result, default);
-                    }
-                }
-
-                if (RemovedAttribute.IsDefined(prop, typeof(RemovedAttribute)))
-                {
-                    var removed = RemovedAttribute.GetCustomAttribute(prop, typeof(RemovedAttribute)) as RemovedAttribute;
-                    if (_versionComparer.Compare(_version, removed.OnVersion) >= 0)
-                    {
-                        prop.SetValue(result, default);
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        public override void WriteJson(JsonWriter writer, T value, JsonSerializer serializer)
-        {
-            foreach (var prop in typeof(T).GetProperties())
-            {
-                if (AddedAttribute.IsDefined(prop, typeof(AddedAttribute)))
-                {
-                    var added = AddedAttribute.GetCustomAttribute(prop, typeof(AddedAttribute)) as AddedAttribute;
-                    if (_versionComparer.Compare(_version, added.OnVersion) < 0)
-                    {
-                        prop.SetValue(value, default);
-                    }
-                }
-
-                if (RemovedAttribute.IsDefined(prop, typeof(RemovedAttribute)))
-                {
-                    var removed = RemovedAttribute.GetCustomAttribute(prop, typeof(RemovedAttribute)) as RemovedAttribute;
-                    if (_versionComparer.Compare(_version, removed.OnVersion) >= 0)
-                    {
-                        prop.SetValue(value, default);
-                    }
-                }
-            }
-
-            serializer.Converters.Remove(this);
-            serializer.NullValueHandling = NullValueHandling.Ignore;
-            serializer.Serialize(writer, value, typeof(T));
-        }
+        bool ShouldSerialize(JsonProperty property, string version, VersionComparer comparer);
     }
+
 
     public partial class PlayerDatabasePropertiesConverter : JsonConverter<PlayerDatabaseProperties>
     {
@@ -173,8 +115,6 @@ namespace Cadl.ProviderHubController.Common.Additions
             {
                 WriteBaseProperty(nameof(value.UserId), value.UserId, writer, serializer.NullValueHandling);
                 WriteBaseProperty(nameof(value.ProvisioningState), value.ProvisioningState, writer, serializer.NullValueHandling);
-                JsonConverterHelper.SerializeProperties(writer, value, serializer);
-
 
                 if (IsCanonical || (_versionComparer.Compare(_version, "2022-01-01") >= 0 && _versionComparer.Compare(_version, "2022-03-01") < 0))
                 {
