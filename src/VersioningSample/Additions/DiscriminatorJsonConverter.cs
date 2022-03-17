@@ -11,27 +11,30 @@ using Newtonsoft.Json.Serialization;
 namespace VersioningSample1.Additions
 {
     /// <summary>
-    /// Base JSON converter for discriminated polymorphic objects.
+    /// JSON converter for discriminated polymorphic objects.
     /// </summary>
     public class DiscriminatorJsonConverter<T> : JsonConverter
         where T : class
     {
         /// <summary>
         /// Initializes an instance of the PolymorphicDeserializeJsonConverter.
+        /// This T class need to have [Discriminator] attribute;
         /// </summary>
-        /// <param name="discriminatorField">The JSON field used as a discriminator</param>
-        public DiscriminatorJsonConverter(string discriminatorField)
+        public DiscriminatorJsonConverter()
         {
+            var discriminatorValue = typeof(T).GetCustomAttribute<DiscriminatorAttribute>()?.FieldName;
 
-            if (discriminatorField == null)
+            if (string.IsNullOrWhiteSpace(discriminatorValue))
             {
-                throw new ArgumentNullException(nameof(discriminatorField));
+                throw new ArgumentException(
+                    $"Unable to locate the discriminator information on class {typeof(T).Name}");
             }
-            Discriminator = discriminatorField;
+
+            Discriminator = discriminatorValue;
         }
 
         /// <summary>
-        /// Returns true for serialization.
+        /// Returns false for serialization.
         /// </summary>
         public override bool CanWrite => false;
 
@@ -43,9 +46,22 @@ namespace VersioningSample1.Additions
         /// <summary>
         /// Discriminator property name.
         /// </summary>
-        public string Discriminator { get; protected set; }
+        public string Discriminator { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Returns true if the object being deserialized is assignable to the base type. False otherwise.
+        /// </summary>
+        /// <param name="objectType">The type of the object to check.</param>
+        /// <returns>True if the object being deserialized is assignable to the base type. False otherwise.</returns>
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(T).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
+        }
+
+        /// <summary>Writes the JSON representation of the object.</summary>
+        /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
@@ -97,16 +113,6 @@ namespace VersioningSample1.Additions
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Returns true if the object being deserialized is assignable to the base type. False otherwise.
-        /// </summary>
-        /// <param name="objectType">The type of the object to check.</param>
-        /// <returns>True if the object being deserialized is assignable to the base type. False otherwise.</returns>
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(T).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
         }
 
         /// <summary>

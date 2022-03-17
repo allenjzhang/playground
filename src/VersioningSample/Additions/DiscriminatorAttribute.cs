@@ -15,6 +15,9 @@ namespace VersioningSample1.Additions
             Value = value;
         }
 
+        /// <summary>
+        /// Gets or sets the discriminator field name.
+        /// </summary>
         public string FieldName { get; set; }
 
         public string Value { get; set; }

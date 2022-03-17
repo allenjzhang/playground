@@ -8,7 +8,7 @@ using VersioningSample1.Additions;
 
 namespace Microsoft.PlayFab.Service.Models {
     [Discriminator("type", "Freshness")]
-    //[JsonObject("Freshness")]
+    [JsonConverter(typeof(DiscriminatorJsonConverter<ScoringFunction>))]
     public partial class FreshnessScoringFunction : ScoringFunction {
 
         private static readonly string DiscriminatorValue = "Freshness";

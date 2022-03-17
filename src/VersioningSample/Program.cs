@@ -22,11 +22,12 @@ namespace VersioningSample1
         static void DiscriminatorSerialization()
         {
             var serializer = new VersionedSerializer();
+            //serializer.AddConverters(new DiscriminatorJsonConverter<ScoringFunction>());
             var settings = serializer.GetJsonSerializerSettings("2022-01-01");
             var distance = new DistanceScoringFunction() { Type = "distance", Boost = 100, Distance = 11 };
             var v1Str = JsonConvert.SerializeObject(distance, Formatting.Indented, settings);
-            var backObj = JsonConvert.DeserializeObject<PlayerDatabase>(v1Str, settings);
-            Console.WriteLine(backObj.Properties.Function.GetType().Name);
+            var backObj = JsonConvert.DeserializeObject<ScoringFunction>(v1Str, settings);
+            Console.WriteLine(backObj.GetType().Name);
             Debug.Assert(backObj.GetType() == distance.GetType());
         }
 
@@ -44,7 +45,7 @@ namespace VersioningSample1
             };
 
             var serializer = new VersionedSerializer();
-            serializer.AddConverters(new DiscriminatorJsonConverter<ScoringFunction>("type"));
+            //serializer.AddConverters(new DiscriminatorJsonConverter<ScoringFunction>());
             var settings1 = serializer.GetJsonSerializerSettings("2022-01-01");
             Console.WriteLine("V1 Json (+ color, - weight)");
             Console.WriteLine(JsonConvert.SerializeObject(pdp, settings1));
@@ -67,8 +68,8 @@ namespace VersioningSample1
 
             var v1Str = JsonConvert.SerializeObject(pd, Formatting.Indented, serializer.GetJsonSerializerSettings());
 
-            settings1.Converters.Add(new DiscriminatorJsonConverter<ScoringFunction>("type"));
-            settings1.Converters.Add(new DiscriminatorJsonConverter<ScoringFunction>("type"));
+            //settings1.Converters.Add(new DiscriminatorJsonConverter<ScoringFunction>());
+            //settings1.Converters.Add(new DiscriminatorJsonConverter<ScoringFunction>());
 
 
             Console.WriteLine("V1 Json (+ removedV2, - addedV2, + spin, properties:(+ color, - weight)");
