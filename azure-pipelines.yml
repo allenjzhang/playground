@@ -1,15 +1,3 @@
-# ASP.NET Core (.NET Framework)
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'Azure SDK Developer Playground(faa080af-c1d8-40ad-9cce-e1a450ca5b57)'
-    appType: 'webApp'
-    appName: 'azhangtestwebapp'
-    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-    deploymentMethod: 'auto'
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
 trigger:
 - master
 
@@ -39,3 +27,15 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+# ASP.NET Core (.NET Framework)
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'Azure SDK Developer Playground(faa080af-c1d8-40ad-9cce-e1a450ca5b57)'
+    appType: 'webApp'
+    appName: 'azhangtestwebapp'
+    package: '$(solution)/**/*.zip'
+    deploymentMethod: 'auto'
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
