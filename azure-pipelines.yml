@@ -17,7 +17,7 @@ steps:
   displayName: 'Building'
   inputs:
     command: 'build'
-    projects: '$(webappPath)/*.csproj'
+    projects: '$(webappPath)/contoso.csproj'
 
 - task: AzureWebApp@1
   inputs:
