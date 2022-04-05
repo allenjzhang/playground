@@ -1,41 +1,34 @@
-# ASP.NET Core (.NET Framework)
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-18.04'
+
+variables:
+  webappPath: 'src/webapps/contoso'
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET Core SDK'
+  inputs:
+    version: '6.0.x'
+    includePreviewVersions: true # Required for preview versions
+
+- task: DotNetCoreCLI@2
+  displayName: 'Building'
+  inputs:
+    command: 'build'
+    projects: '$(webappPath)/contoso.csproj'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    projects: '$(webappPath)/contoso.csproj'
+    publishWebProjects: true
+
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'Azure SDK Developer Playground(faa080af-c1d8-40ad-9cce-e1a450ca5b57)'
     appType: 'webApp'
     appName: 'azhangtestwebapp'
-    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    package: '$(webappPath)/**/*.zip'
     deploymentMethod: 'auto'
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
-trigger:
-- master
-
-pool:
-  vmImage: 'windows-latest'
-
-variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-
-steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
-
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
