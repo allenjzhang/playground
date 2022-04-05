@@ -19,10 +19,16 @@ steps:
     command: 'build'
     projects: '$(webappPath)/contoso.csproj'
 
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    projects: '$(webappPath)/contoso.csproj'
+    publishWebProjects: true
+
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'Azure SDK Developer Playground(faa080af-c1d8-40ad-9cce-e1a450ca5b57)'
     appType: 'webApp'
     appName: 'azhangtestwebapp'
-    package: '$(webappPath)/bin/Debug/net6.0/*.*'
+    package: '$(webappPath)/**/*.zip'
     deploymentMethod: 'auto'
