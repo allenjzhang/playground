@@ -24,5 +24,5 @@ steps:
     azureSubscription: 'Azure SDK Developer Playground(faa080af-c1d8-40ad-9cce-e1a450ca5b57)'
     appType: 'webApp'
     appName: 'azhangtestwebapp'
-    package: '$(webappPath)/C:\Github\Sandbox\playground\src\webapps\contoso\bin\Debug\net6.0'
+    package: '$(webappPath)/bin/Debug/net6.0/*.*'
     deploymentMethod: 'auto'
