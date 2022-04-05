@@ -4,7 +4,7 @@ pool:
   vmImage: 'ubuntu-18.04'
 
 variables:
-  webappPath: 'src\webapps\contoso'
+  webappPath: 'src/webapps/contoso'
 
 steps:
 - task: UseDotNet@2
