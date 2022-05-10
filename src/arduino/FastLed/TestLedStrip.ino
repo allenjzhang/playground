@@ -1,9 +1,11 @@
+#include <SerialDebug.h>
+
 #include <FastLED.h>
 
 // Select the timers you're using, here ITimer1
 #define USE_TIMER_1 true
 
-#include "TimerInterrupt.h"
+#include <TimerInterrupt.h>
 
 #define LED_PIN 5
 #define NUM_LEDS 60
@@ -14,7 +16,7 @@
 
 CRGB leds[NUM_LEDS];
 
-#define TIMER_INTERVAL_MS 1000L
+#define TIMER_INTERVAL_MS 500L
 
 int motions[MOTION_ZONES];
 int zoneSize = NUM_LEDS / MOTION_ZONES;
@@ -65,7 +67,19 @@ int timerCallbackCount = 0;
 void TimerHandler()
 {
   Serial.println(F("In timer callback."));
-  motions[(timerCallbackCount++) % MOTION_ZONES] = true;
+  // decay previous motion zone
+  for (int i = 0; i < MOTION_ZONES; i++)
+  {
+    if (motions[i] > 0)
+    {
+      motions[i]--;
+    }
+  }
+
+  int activeMotionZone = (timerCallbackCount++) % MOTION_ZONES;
+  if (activeMotionZone >= MOTION_ZONES)
+    cIndex += 3;
+  motions[activeMotionZone] = 5;
 }
 
 void SetupTimer()
@@ -110,22 +124,23 @@ void loop()
 
 void StaircaseChaser()
 {
+  fill_solid(leds, NUM_LEDS, CRGB::Black);
   for (int i = 0; i < MOTION_ZONES; i++)
   {
-    if (motions[i])
+    if (motions[i] > 0)
     {
-      Lightup_Zone(i);
+      Lightup_Zone(i, motions[i]);
     }
   }
   FastLED.show();
   delay(50);
 }
 
-void Lightup_Zone(int zone)
+void Lightup_Zone(int zone, int intensity)
 {
   for (int i = zone * zoneSize; i < (zone + 1) * zoneSize; i++)
   {
-    leds[i] = CRGB::Grey; // ColorFromPalette(RainbowColors_p, 0, 255, LINEARBLEND);
+    leds[i] = ColorFromPalette(RainbowColors_p, cIndex, 5 * intensity, LINEARBLEND);
   }
 }
 
