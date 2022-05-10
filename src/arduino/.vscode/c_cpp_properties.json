@@ -8,7 +8,8 @@
             "intelliSenseMode": "windows-msvc-x64",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/Users/azhang/Documents/Arduino/libraries/**"
+                "C:/Users/azhang/Documents/Arduino/libraries/**",
+                "C:/Users/azhang/Documents/Arduino/libraries/SerialDebug/src"
             ],
             "forcedInclude": [],
             "cStandard": "c17",
@@ -17,7 +18,12 @@
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
-            ]
+            ],
+            "browse": {
+                "path": [
+                    "C:\\Users\\azhang\\Documents\\Arduino"
+                ]
+            }
         },
         {
             "name": "Arduino",
