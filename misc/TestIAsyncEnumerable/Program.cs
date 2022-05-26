@@ -14,6 +14,7 @@ namespace ConsoleApp2
 
         static async Task Main(string[] args)
         {
+            // Hi Dad! This is a comment
             Console.WriteLine("IAsyncEnumerable");
             await foreach (var d in ListAsync())
             {
