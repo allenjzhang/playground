@@ -11,11 +11,11 @@
 #define BRIGHTNESS 64
 #define LED_TYPE WS2811
 #define COLOR_ORDER GRB
-#define MOTION_ZONES 10
+#define MOTION_ZONES 60
 
 CRGB leds[NUM_LEDS];
 
-#define TIMER_INTERVAL_MS 500L
+#define TIMER_INTERVAL_MS 125L
 
 int motions[MOTION_ZONES];
 int zoneSize = NUM_LEDS / MOTION_ZONES;
@@ -53,7 +53,7 @@ void TimerHandler()
   int activeMotionZone = (timerCallbackCount++) % MOTION_ZONES;
   if (activeMotionZone >= MOTION_ZONES)
     cIndex += 3;
-  motions[activeMotionZone] = 5;
+  motions[activeMotionZone] = 20;
 }
 
 void SetupTimer()

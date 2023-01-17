@@ -304,4 +304,7 @@ obj/
 *.vsix
 *.zip
 
+# ignore node_modules
+node_module/**
+
 .npmrc
