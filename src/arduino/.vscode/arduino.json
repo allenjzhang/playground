@@ -1,7 +1,5 @@
 {
     "board": "arduino:avr:uno",
-    "programmer": "arduino:avrisp",
     "port": "COM3",
-    "sketch": "Stairchaser\\Stairchaser.ino",
-    "output": "build"
+    "sketch": "TestPIR\\testpir.ino\\testpir.ino"
 }

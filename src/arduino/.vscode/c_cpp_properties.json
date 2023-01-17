@@ -18,12 +18,7 @@
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
-            ],
-            "browse": {
-                "path": [
-                    "C:\\Users\\azhang\\Documents\\Arduino"
-                ]
-            }
+            ]
         },
         {
             "name": "Arduino",
@@ -41,9 +36,6 @@
             "includePath": [
                 "C:\\Users\\azhang\\Desktop\\arduino-nightly\\hardware\\arduino\\avr\\cores\\arduino",
                 "C:\\Users\\azhang\\Desktop\\arduino-nightly\\hardware\\arduino\\avr\\variants\\standard",
-                "C:\\Users\\azhang\\Documents\\Arduino\\libraries\\SerialDebug\\src",
-                "C:\\Users\\azhang\\Documents\\Arduino\\libraries\\FastLED\\src",
-                "C:\\Users\\azhang\\Documents\\Arduino\\libraries\\TimerInterrupt\\src",
                 "c:\\users\\azhang\\desktop\\arduino-nightly\\hardware\\tools\\avr\\lib\\gcc\\avr\\7.3.0\\include",
                 "c:\\users\\azhang\\desktop\\arduino-nightly\\hardware\\tools\\avr\\lib\\gcc\\avr\\7.3.0\\include-fixed",
                 "c:\\users\\azhang\\desktop\\arduino-nightly\\hardware\\tools\\avr\\avr\\include"

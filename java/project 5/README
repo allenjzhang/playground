@@ -1,0 +1,25 @@
+This is code for your project 5. Feel free to make your 
+own copy of it to work with, but for any questions 
+that may refer to line numbers, you should refer to the 
+code in this workspace.
+
+The AVLTree.java file contains a simple AVL tree implementation 
+based on our class discussions of the AVL tree. 
+
+The PriorityQueue_Copy.java file contains a copy of the 
+PriorirytQueue class that is included in a java distribution. 
+This file will not compile since its name does not match the name of 
+the class. To experiment with the functionality of the PriorityQueue class
+use the one from the java libraries. 
+For this implementation you are responsible for the functions that we 
+discussed in class: constructors, ways of adding and removing from 
+a priority queue (and the functions that are called from those functions like 
+heapify, siftDown, siftUp, ...). You are not responsible for understanding 
+SplitIterators or functions that use Predicate classes.
+
+The two comparator classes SringLengthComparator and AbsValComparator 
+are used in the two examples that demonstrate the use of the
+AVLTree class and PriorityQueue class. Some of the questions 
+in the quiz may refer to these comparator classes. 
+
+
