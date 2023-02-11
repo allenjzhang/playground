@@ -1,11 +1,13 @@
 Push-Location
 
 Set-Location C:\Github\cadl\core
-git restore .
+git checkout TypeSpecRename
+git reset --hard upstream/main
 git clean -xdf .
 
 Set-Location C:\Github\cadl
-git restore .
+git checkout TypeSpecRename
+git reset --hard upstream/main
 git clean -xdf .
 
 Pop-Location
