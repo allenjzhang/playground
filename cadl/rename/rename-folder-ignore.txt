@@ -4,3 +4,5 @@ coverage
 obj
 temp
 .sdk_emitters
+version-latest
+versioned_sidebars

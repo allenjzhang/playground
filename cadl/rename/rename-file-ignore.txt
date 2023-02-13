@@ -1,2 +1,3 @@
 MSSharedLibKey.snk
 signature-help.png
+cspell.yaml
