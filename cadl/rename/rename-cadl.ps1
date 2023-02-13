@@ -122,14 +122,15 @@ function SearchReplace($fileName) {
 
 function SpecificSearchReplace([string]$fileName, [string]$searchStr, [string]$replaceStr) {
   $fileContent = Get-Content -Path $fileName
-  
+
   $fileContent = $fileContent -replace $searchStr, $replaceStr
 
   Set-Content -Path $fileName -Value $fileContent
 }
 
 function ConvertCRLFtoLF($fileName) {
-  Get-Content -Path $fileName -Encoding UTF8 | ForEach-Object { $_ -replace "`r`n", "`n" } | Set-Content -Path $fileName -Encoding UTF8
+  $text = [IO.File]::ReadAllText($fileName) -replace "`r`n", "`n"
+  [IO.File]::WriteAllText($fileName, $text)
 }
 
 $currentScript = $MyInvocation.MyCommand.Definition
@@ -163,33 +164,33 @@ if ($Step -eq 1) {
   ProcessFileItem( Get-Item $rootFolder);
 
   # -- Post replace correction
-  SpecificSearchReplace $rootFolder+"\core\packages\migrate\package.json" "npm:@typespec/compiler@" "npm:@cadl-lang/compiler@"
-  SpecificSearchReplace $rootFolder+"\core\packages\migrate\src\migrations\v0.38\model-to-scalars.ts" "TypeSpecScriptNode" "CadlScriptNode"
-  SpecificSearchReplace $rootFolder+"\rush.json" "microsoft\\.typespec\\.providerhub" "microsoft.typespec.providerhub"
-  SpecificSearchReplace $rootFolder+"\packages\website\.scripts\clone-emitter-packages.ps1" "src/TYPESPEC.Extension" "src/CADL.Extension"
-  SpecificSearchReplace $rootFolder+"\packages\website\.scripts\regen-ref-docs.mjs" "src/TYPESPEC.Extension" "src/CADL.Extension"
-  ProcessFileItem( Get-Item $rootFolder+"\core\packages\compiler\test\libraries\simple\node_modules\MyLib")
-  ProcessFileItem( Get-Item $rootFolder+"\core\packages\compiler\test\libraries\simple\node_modules\CustomCadlMain")
-  ProcessFileItem( Get-Item $rootFolder+"\core\packages\compiler\test\e2e\scenarios\emitter-require-import\node_modules\`@cadl-lang")
-  ProcessFileItem( Get-Item $rootFolder+"\core\packages\compiler\test\e2e\scenarios\emitter-throw-error\node_modules\`@cadl-lang")
-  ProcessFileItem( Get-Item $rootFolder+"\core\packages\compiler\test\e2e\scenarios\import-library-invalid\node_modules\my-lib")
-  ProcessFileItem( Get-Item $rootFolder+"\core\packages\compiler\test\e2e\scenarios\same-library-diff-version\node_modules\`@cadl-lang")
-  ProcessFileItem( Get-Item $rootFolder+"\core\packages\compiler\test\e2e\scenarios\same-library-same-version\node_modules\`@cadl-lang")
+  SpecificSearchReplace "$rootFolder\core\packages\migrate\package.json" "npm:@typespec/compiler@" "npm:@cadl-lang/compiler@"
+  SpecificSearchReplace "$rootFolder\core\packages\migrate\src\migrations\v0.38\model-to-scalars.ts" "TypeSpecScriptNode" "CadlScriptNode"
+  SpecificSearchReplace "$rootFolder\rush.json" "microsoft\\.typespec\\.providerhub" "microsoft.typespec.providerhub"
+  SpecificSearchReplace "$rootFolder\packages\website\.scripts\clone-emitter-packages.ps1" "src/TYPESPEC.Extension" "src/CADL.Extension"
+  SpecificSearchReplace "$rootFolder\packages\website\.scripts\regen-ref-docs.mjs" "src/TYPESPEC.Extension" "src/CADL.Extension"
+  ProcessFileItem( Get-Item "$rootFolder\core\packages\compiler\test\libraries\simple\node_modules\MyLib")
+  ProcessFileItem( Get-Item "$rootFolder\core\packages\compiler\test\libraries\simple\node_modules\CustomCadlMain")
+  ProcessFileItem( Get-Item "$rootFolder\core\packages\compiler\test\e2e\scenarios\emitter-require-import\node_modules\`@cadl-lang")
+  ProcessFileItem( Get-Item "$rootFolder\core\packages\compiler\test\e2e\scenarios\emitter-throw-error\node_modules\`@cadl-lang")
+  ProcessFileItem( Get-Item "$rootFolder\core\packages\compiler\test\e2e\scenarios\import-library-invalid\node_modules\my-lib")
+  ProcessFileItem( Get-Item "$rootFolder\core\packages\compiler\test\e2e\scenarios\same-library-diff-version\node_modules\`@cadl-lang")
+  ProcessFileItem( Get-Item "$rootFolder\core\packages\compiler\test\e2e\scenarios\same-library-same-version\node_modules\`@cadl-lang")
 }
 elseif ($Step -eq 2) {
   Write-Host "Step 2: Perform files, folders rename" -BackgroundColor Yellow  -ForegroundColor Black
   Get-ChildItem -Path $rootFolder | foreach-object { RenamingFileItems($_) }
 
-  RenamingFileItems( Get-Item $rootFolder+"\core\packages\compiler\test\libraries\simple\node_modules\MyLib")
-  RenamingFileItems( Get-Item $rootFolder+"\core\packages\compiler\test\libraries\simple\node_modules\CustomCadlMain")
-  RenamingFileItems( Get-Item $rootFolder+"\core\packages\compiler\test\e2e\scenarios\emitter-require-import\node_modules\`@cadl-lang")
-  RenamingFileItems( Get-Item $rootFolder+"\core\packages\compiler\test\e2e\scenarios\emitter-throw-error\node_modules\`@cadl-lang")
-  RenamingFileItems( Get-Item $rootFolder+"\core\packages\compiler\test\e2e\scenarios\same-library-diff-version\node_modules\`@cadl-lang")
-  RenamingFileItems( Get-Item $rootFolder+"\core\packages\compiler\test\e2e\scenarios\same-library-same-version\node_modules\`@cadl-lang")
+  RenamingFileItems( Get-Item "$rootFolder\core\packages\compiler\test\libraries\simple\node_modules\MyLib")
+  RenamingFileItems( Get-Item "$rootFolder\core\packages\compiler\test\libraries\simple\node_modules\CustomCadlMain")
+  RenamingFileItems( Get-Item "$rootFolder\core\packages\compiler\test\e2e\scenarios\emitter-require-import\node_modules\`@cadl-lang")
+  RenamingFileItems( Get-Item "$rootFolder\core\packages\compiler\test\e2e\scenarios\emitter-throw-error\node_modules\`@cadl-lang")
+  RenamingFileItems( Get-Item "$rootFolder\core\packages\compiler\test\e2e\scenarios\same-library-diff-version\node_modules\`@cadl-lang")
+  RenamingFileItems( Get-Item "$rootFolder\core\packages\compiler\test\e2e\scenarios\same-library-same-version\node_modules\`@cadl-lang")
 
   # Formatter test are sensitive to line return
-  Get-ChildItem -Path $rootFolder+"core\packages\compiler\test\formatter\scenarios\outputs" | foreach-object { ConvertCRLFtoLF($_) }
+  Get-ChildItem -Path "$rootFolder\core\packages\compiler\test\formatter\scenarios\outputs" | foreach-object { ConvertCRLFtoLF $_ }
 }
 else {
-  Write-Host "Error: Only 2 steps supported. Please execute in order" -BackgroundColor DarkRed
+    Write-Host "Error: Only 2 steps supported. Please execute in order" -BackgroundColor DarkRed
 }
