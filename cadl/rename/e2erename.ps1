@@ -1,4 +1,4 @@
-$global:rootFolder = "/Users/allenzhang/github/cadl"
+$global:rootFolder = "c:/github/cadl"
 
 function NotifyNextStep($msg) {
   Write-Host "`r`n$msg`r`n" -BackgroundColor White -ForegroundColor Black
@@ -38,7 +38,7 @@ rush update
 rush rebuild
 rush format
 git add .
-git commit -m "3/3 Rush update, rebuild, and format successful"
+#git commit -m "3/3 Rush update, rebuild, and format successful"
 
 NotifyNextStep "Press any key to run rush rebuild TypeSpec Azure"
 Set-Location $rootFolder
@@ -46,7 +46,7 @@ rush update
 rush rebuild
 rush format
 git add .
-git commit -m "3/3 Rush update, rebuild, and format successful"
+#git commit -m "3/3 Rush update, rebuild, and format successful"
 
 
 NotifyNextStep "All done. You can review and commit last batch of changed files"

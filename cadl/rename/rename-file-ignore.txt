@@ -3,3 +3,4 @@ signature-help.png
 cspell.yaml
 pr-tryit.yaml
 create-tryit-comment.js
+.gitmodules

@@ -156,32 +156,9 @@ $ignoreFilesList = Get-Content $currentScriptDirectory/rename-file-ignore.txt
 
 # Note, following list values are ordered
 $replacements = New-Object System.Collections.Specialized.OrderedDictionary
-$replacements.Add("(?-i)``````cadl", "``````typespec");
+$replacements.Add("(?-i)typespec-output", "``````typespec");
 $replacements.Add("(?-i)cadl-server", "tsp-server");
-$replacements.Add("(?-i)cadl.js", "tsp.js");
-$replacements.Add("(?-i)cadl-project\.yaml", "tspconfig.yaml");
-$replacements.Add("(?-i)\.cadlMain", ".typespecMain");
-$replacements.Add("(?-i)files.cadl", "files.typespec");
-$replacements.Add("(?-i)init.cadlFileFolder", "init.typespecFileFolder");
-$replacements.Add("(?-i)microsoft\.cadl\.", "microsoft.typespec.");
-$replacements.Add("(?-i)@cadl-lang", "@typespec");
-$replacements.Add("(?-i)cadl init", "tsp init");
-$replacements.Add("(?-i)cadl vs", "tsp vs");
-$replacements.Add("(?-i)cadl code", "tsp code");
-$replacements.Add("(?-i)cadl install", "tsp install");
-$replacements.Add("(?-i)cadl compile", "tsp compile");
-$replacements.Add("(?-i)cadl format", "tsp format");
-$replacements.Add("(?-i)cadl --help", "tsp --help");
-$replacements.Add("(?-i)cadl <comp", "tsp <comp");
-$replacements.Add("(?-i)cadl info", "tsp info");
-$replacements.Add("(?-i)npx cadl", "npx tsp");
-$replacements.Add("(?-i)\.cadl(?=[^a-zA-Z0-9])", ".tsp");
-$replacements.Add("(?-i)cadl-", "typespec-");
-$replacements.Add("(?-i)cadlMain", "typespecMain");
-# -- Core replacement token, case sensitive should be last
-$replacements.Add("(?-i)cadl", "typespec");
-$replacements.Add("(?-i)Cadl", "TypeSpec");
-$replacements.Add("(?-i)CADL", "TYPESPEC");
+
 
 if ($Step -eq 1) {
   Write-Host "Step 1: Perform content replacement Cadl -> TypeSpec" -BackgroundColor Yellow -ForegroundColor Black
