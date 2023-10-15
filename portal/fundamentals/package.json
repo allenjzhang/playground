@@ -1,0 +1,22 @@
+{
+  "name": "typespec_fundamental_sample",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "tspMain": "lib/main.tsp",
+  "devDependencies": {
+    "@azure-tools/portal-core": "file:../portal-core",
+    "@azure-tools/typespec-autorest": "0.34.0",
+    "@azure-tools/typespec-azure-core": "0.34.0",
+    "@azure-tools/typespec-providerhub": "^0.34.0",    
+    "@azure-tools/typespec-azure-resource-manager": "0.34.0",
+    "@typespec/compiler": "0.48.0",
+    "@typespec/http": "0.48.0",
+    "@typespec/openapi": "0.48.0",
+    "@typespec/rest": "0.48.0",
+    "@typespec/versioning": "0.48.0",
+    "prettier": "~3.0.3",
+    "typescript": "~5.1.3"
+  }
+}

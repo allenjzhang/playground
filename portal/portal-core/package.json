@@ -1,0 +1,24 @@
+{
+  "name": "@azure-tools/portal-core",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Azure",
+    "Portal",
+    "TypeSpec"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "tspMain": "lib/main.tsp",
+  "peerDependencies": {
+    "@typespec/compiler": "^0.48.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
+}

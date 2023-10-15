@@ -305,3 +305,6 @@ obj/
 *.zip
 
 .npmrc
+
+# TypeSpec
+tsp-output/

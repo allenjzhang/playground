@@ -1,0 +1,41 @@
+{
+  "name": "@azure-tools/typespec-portal-emitter",
+  "version": "0.0.1",
+  "description": "TypeSpec emitter for Azure Portal",
+  "scripts": {
+    "clean": "rimraf ./dist ./temp",
+    "build": "npm run compile",
+    "compile": "tsc -p .",
+    "watch": "tsc -p . --watch",
+    "test": "mocha",
+    "test-official": "c8 mocha --forbid-only --reporter mocha-multi-reporters",
+    "lint": "eslint . --ext .ts --max-warnings=0",
+    "lint:fix": "eslint . --fix --ext .ts"
+  },
+  "keywords": [
+    "typespec",
+    "portal"
+  ],
+  "author": "Microsoft Corporation",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "tspMain": "dist/src/index.js",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "@azure-tools/portal-core": "file:../portal-core",
+    "@azure-tools/typespec-azure-core": "^0.34.0",
+    "@azure-tools/typespec-azure-resource-manager": "^0.34.0",
+    "@types/mocha": "^10.0.2",
+    "@types/node": "^20.8.2",
+    "@typespec/compiler": "^0.48.1",
+    "@typespec/http": "^0.48.0",
+    "@typespec/rest": "^0.48.0",
+    "@typespec/versioning": "^0.48.0",
+    "mocha": "^10.2.0",
+    "path": "^0.12.7",
+    "typescript": "^5.2.2"
+  }
+}
