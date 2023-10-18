@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Core" Version="1.2.0" />
-    <PackageReference Include="Azure.Identity" Version="1.1.1" />
+    <PackageReference Include="Azure.Identity" Version="1.10.2" />
     <PackageReference Include="Microsoft.Azure.Management.Compute" Version="35.1.0" />
     <PackageReference Include="Microsoft.Azure.Management.Fluent" Version="1.33.0" />
     <PackageReference Include="Microsoft.Azure.Management.Network" Version="5.0.0" />
