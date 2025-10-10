@@ -1,10 +1,12 @@
 attrs==21.2.0
+av==16.0.0
 Brotli==1.0.9
 ConfigParser==7.2.0
 cryptography==3.4.8
 Cython==3.1.4
 dl==0.1.0
 docutils==0.22.2
+faster_whisper==1.2.0
 Flask==3.1.2
 flask_cors==6.0.1
 HTMLParser==0.0.2
@@ -26,8 +28,6 @@ Pillow==11.3.0
 protobuf==3.12.4
 pyOpenSSL==25.3.0
 railroad==0.5.0
-scipy==1.8.0
-speechrecognition==3.14.3
 Sphinx==8.2.3
 thread==2.0.5
 toml==0.10.2
