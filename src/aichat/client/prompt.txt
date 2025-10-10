@@ -1,0 +1,15 @@
+Would like to create an AI project with following:
+
+Client:
+
+- Is a web app
+- Opens camera and mic to capture user input
+- The audio video is sent to a backend server for audio transcription and image recognition
+- For audio, the server may send back replies which will be played back as speech to the user
+- For video, once object is recognized in the video, bounding box will show up in the video
+
+Server:
+
+- Be able to receive audio/video from Client
+- With audio, it will run audio transcription, it will then feed to LLM for chat. reply will be sent back to Client
+- With video, provide object detection and information that can be show in the video as bounding boxes

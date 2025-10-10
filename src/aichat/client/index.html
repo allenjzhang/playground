@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Audio-Video Processing App</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        .video-container { position: relative; width: 640px; height: 480px; margin: 0 auto; }
+        #videoFeed { width: 640px; height: 480px; position: absolute; top: 0; left: 0; }
+        #canvas { position: absolute; top: 0; left: 0; width: 640px; height: 480px; background: transparent; }
+        #response { margin-top: 20px; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <h1>AI Audio-Video Processing</h1>
+    <div class="video-container">
+        <video id="videoFeed" autoplay playsinline></video>
+        <canvas id="canvas"></canvas>
+    </div>
+    <p id="response">Speak or show objects to the camera...</p>
+    <script>
+        const video = document.getElementById('videoFeed');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const responseText = document.getElementById('response');
+        let stream, audioContext, source, processor;
+
+        // Initialize video stream
+        async function startVideo() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                video.srcObject = stream;
+                canvas.width = video.width = 640;
+                canvas.height = video.height = 480;
+                // sendVideoFrames();
+                startAudio();
+            } catch (err) {
+                console.error('Error accessing media devices:', err);
+                responseText.textContent = 'Error accessing camera/mic';
+            }
+        }
+
+        // Send video frames to server for object detection
+        function sendVideoFrames() {
+            if (!stream) return;
+            const track = stream.getVideoTracks()[0];
+            const imageCapture = new ImageCapture(track);
+            setInterval(async () => {
+                try {
+                    const frame = await imageCapture.grabFrame();
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = frame.width;
+                    tempCanvas.height = frame.height;
+                    tempCanvas.getContext('2d').drawImage(frame, 0, 0);
+                    const dataUrl = tempCanvas.toDataURL('image/jpeg');
+                    const response = await fetch('http://192.168.1.18:5000/detect_objects', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: dataUrl })
+                    });
+                    const result = await response.json();
+                    drawBoundingBoxes(result.objects);
+                } catch (err) {
+                    console.error('Error sending frame:', err);
+                }
+            }, 1000 / 5); // 5 FPS
+        }
+
+        function drawBoundingBoxes(objects) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear for transparency
+            objects.forEach(obj => {
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(obj.x, obj.y, obj.width, obj.height);
+                ctx.fillStyle = 'red';
+                ctx.font = '16px Arial';
+                ctx.fillText(obj.label, obj.x, obj.y - 5);
+            });
+        }
+
+        // Initialize audio stream
+        function startAudio() {
+            audioContext = new AudioContext();
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(audioStream => {
+                source = audioContext.createMediaStreamSource(audioStream);
+                audioContext.audioWorklet.addModule('processor.js').then(() => {
+                    processor = new AudioWorkletNode(audioContext, 'audio-processor');
+                    source.connect(processor);
+                    processor.port.onmessage = (event) => {
+                        sendAudio(event.data);
+                    };
+                });
+            }).catch(err => {
+                console.error('Error accessing audio:', err);
+                responseText.textContent = 'Error accessing microphone';
+            });
+        }
+
+        // Send audio data to server
+        async function sendAudio(audioData) {
+            try {
+                console.log('Sending audio data to server...');
+                const response = await fetch('http://192.168.1.18:5000/transcribe_audio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ audio: btoa(String.fromCharCode(...new Uint8Array(audioData))) })
+                });
+                const result = await response.json();
+                if (result.reply) {
+                    responseText.textContent = result.reply;
+                    // speak(result.reply);
+                }
+            } catch (err) {
+                console.error('Error sending audio:', err);
+            }
+        }
+
+        // Text-to-speech
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Start the app
+        startVideo();
+    </script>
+</body>
+</html>
