@@ -10,12 +10,14 @@
         text-align: center;
         margin: 20px;
       }
+
       .video-container {
         position: relative;
         width: 640px;
         height: 480px;
         margin: 0 auto;
       }
+
       #videoFeed {
         width: 640px;
         height: 480px;
@@ -23,6 +25,7 @@
         top: 0;
         left: 0;
       }
+
       #canvas {
         position: absolute;
         top: 0;
@@ -31,12 +34,14 @@
         height: 480px;
         background: transparent;
       }
+
       #response {
         margin-top: 20px;
         font-size: 18px;
       }
     </style>
   </head>
+
   <body>
     <h1>AI Audio-Video Processing</h1>
     <div class="video-container">
@@ -49,38 +54,43 @@
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
       const responseText = document.getElementById("response");
-      let stream, audioContext, source, processor;
+      let stream;
 
-      // Initialize video stream
       async function startVideo() {
+        console.log("Starting video...");
         try {
           stream = await navigator.mediaDevices.getUserMedia({
             video: true,
             audio: true,
           });
+          console.log("Stream acquired:", stream);
           video.srcObject = stream;
-          canvas.width = video.width = 640;
-          canvas.height = video.height = 480;
+          canvas.width = 640;
+          canvas.height = 480;
+          responseText.textContent = "Video stream started";
           sendVideoFrames();
-          // startAudio();
+          startAudio();
         } catch (err) {
           console.error("Error accessing media devices:", err);
-          responseText.textContent = "Error accessing camera/mic";
+          responseText.textContent = `Error: ${err.message}`;
         }
       }
 
-      // Send video frames to server for object detection
       function sendVideoFrames() {
-        if (!stream) return;
-        const track = stream.getVideoTracks()[0];
-        const imageCapture = new ImageCapture(track);
+        if (!stream) {
+          console.error("No stream available");
+          responseText.textContent = "No video stream";
+          return;
+        }
         setInterval(async () => {
           try {
-            const frame = await imageCapture.grabFrame();
+            console.log("Capturing frame via canvas...");
             const tempCanvas = document.createElement("canvas");
-            tempCanvas.width = frame.width;
-            tempCanvas.height = frame.height;
-            tempCanvas.getContext("2d").drawImage(frame, 0, 0);
+            tempCanvas.width = video.videoWidth;
+            tempCanvas.height = video.videoHeight;
+            tempCanvas
+              .getContext("2d")
+              .drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
             const dataUrl = tempCanvas.toDataURL("image/jpeg");
             const response = await fetch(
               "http://192.168.1.18:5000/detect_objects",
@@ -91,15 +101,17 @@
               }
             );
             const result = await response.json();
+            console.log("Server response:", result);
             drawBoundingBoxes(result.objects);
           } catch (err) {
-            console.error("Error sending frame:", err);
+            console.error("Error in frame processing:", err);
+            responseText.textContent = `Frame error: ${err.message}`;
           }
         }, 1000 / 5); // 5 FPS
       }
 
       function drawBoundingBoxes(objects) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear for transparency
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         objects.forEach((obj) => {
           ctx.strokeStyle = "red";
           ctx.lineWidth = 2;
@@ -123,28 +135,32 @@
             if (event.data.size > 0) {
               console.log("Audio blob size:", event.data.size);
               const audioBlob = new Blob([event.data], { type: "audio/webm" });
-              const formData = new FormData();
-              formData.append("audio", audioBlob, "audio.webm");
-              try {
-                const response = await fetch(
-                  "http://192.168.1.18:5000/transcribe_audio",
-                  {
-                    method: "POST",
-                    body: formData,
+              const reader = new FileReader();
+              reader.readAsDataURL(audioBlob);
+              reader.onloadend = async () => {
+                const base64String = reader.result.split(",")[1];
+                try {
+                  const response = await fetch(
+                    "http://192.168.1.18:5000/transcribe_audio",
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ audio: base64String }),
+                    }
+                  );
+                  const result = await response.json();
+                  if (result.reply) {
+                    responseText.textContent = result.reply;
+                    speak(result.reply);
                   }
-                );
-                const result = await response.json();
-                if (result.reply) {
-                  responseText.textContent = result.reply;
-                  // speak(result.reply);
+                } catch (err) {
+                  console.error("Error sending audio:", err);
+                  responseText.textContent = `Audio error: ${err.message}`;
                 }
-              } catch (err) {
-                console.error("Error sending audio:", err);
-                responseText.textContent = `Audio error: ${err.message}`;
-              }
+              };
             }
           };
-          recorder.start(10000); // 10-second chunks for testing
+          recorder.start(2000); // 2-second chunks for better header integrity
           responseText.textContent = "Audio recording started";
         } catch (err) {
           console.error("Error accessing audio:", err);
@@ -152,37 +168,11 @@
         }
       }
 
-      // Send audio data to server
-      async function sendAudio(audioData) {
-        try {
-          console.log("Sending audio data to server...");
-          const response = await fetch(
-            "http://192.168.1.18:5000/transcribe_audio",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                audio: btoa(String.fromCharCode(...new Uint8Array(audioData))),
-              }),
-            }
-          );
-          const result = await response.json();
-          if (result.reply) {
-            responseText.textContent = result.reply;
-            // speak(result.reply);
-          }
-        } catch (err) {
-          console.error("Error sending audio:", err);
-        }
-      }
-
-      // Text-to-speech
       function speak(text) {
         const utterance = new SpeechSynthesisUtterance(text);
         window.speechSynthesis.speak(utterance);
       }
 
-      // Start the app
       startVideo();
     </script>
   </body>
