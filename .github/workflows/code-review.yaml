@@ -12,4 +12,8 @@ jobs:
         uses: allenjzhang/ai/actions/code-review-js@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+          azure_openai_api_key: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          azure_openai_base_url: ${{ variables.AZURE_OPENAI_BASE_URL }}
+          azure_openai_deployment_name: ${{ variables.AZURE_OPENAI_DEPLOYMENT_NAME }}
+          openai_model_name: "gpt-3.5-turbo"
+          #azure_openai_api_version: ${{ variables.AZURE_OPENAI_API_VERSION }}
